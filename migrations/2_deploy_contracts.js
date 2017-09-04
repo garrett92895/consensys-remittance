@@ -1,5 +1,5 @@
-var RaceTest = artifacts.require("./RaceTest.sol");
+var Remittance = artifacts.require("./Remittance.sol");
 
 module.exports = function(deployer) {
-  deployer.deploy(RaceTest);
+  deployer.deploy(Remittance);
 };

@@ -2,8 +2,7 @@ pragma solidity 0.4.13;
 
 contract Remittance {
     struct Exchange {
-        address sender;
-        address escrow;
+        address receiver;
         uint256 amount;
     }
 
@@ -11,24 +10,30 @@ contract Remittance {
     mapping(bytes32 => Exchange) public exchanges;
     mapping(bytes32 => bool) public passUsed;
 
-	function Remittance() {
-        owner = msg.owner;
+	function Remittance()
+    {
+        owner = msg.sender;
 	}
 
-	function initExchange(address escrow, bytes32 passHash) payable {
+	function initExchange(address receiver, bytes32 passHash)
+      payable 
+      public
+    {
         require(msg.value > 0);
         require(!passUsed[passHash]);
         require(exchanges[passHash].amount == 0);
 
-        exchanges[passHash] = Exchange(msg.sender, escrow, msg.value);
+        exchanges[passHash] = Exchange(receiver, msg.value);
 	}
 
-    function payout(string password) {
+    function payout(string password)
+      public
+    {
         bytes32 passHash = keccak256(password);
 
-        ex = exchanges[passHash];
-        uint256 amountToSend = ex.amount;
-        address toWhom = ex.escrow;
+        Exchange exchange = exchanges[passHash];
+        uint256 amountToSend = exchange.amount;
+        address toWhom = exchange.receiver;
 
         require(amountToSend > 0);
         require(toWhom == msg.sender);
